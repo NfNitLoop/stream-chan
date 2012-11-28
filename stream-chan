@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Reads properties from a .chan file and streams that channel to stdout
+
+SCRIPT="$0"
+SCRIPTDIR="$(dirname "$SCRIPT")"
+
+# Check that config options are set: 
+require() { 
+	if [ -z "$1" ]; then 
+		echo "$2";
+		exit 1;
+	fi
+}
+require_file() { 
+	if [ ! -f "$1" ]; then 
+		echo "$2";
+		exit 1;
+	fi
+}
+
+# Load script config: HDHR, DEVICE & TUNER
+CONFIG="$SCRIPT.conf"
+require_file "$CONFIG" "Create a configuration file $CONFIG"
+source "$CONFIG"
+
+require "$HDHR" "The HDHR parameter must point to the hdhomerun_config utility."
+require "$DEVICE" "DEVICE must be your hdhomerund device ID."
+require "$TUNER" "TUNER must be the integer tuner ID to use."
+
+CHANFILE="$1"
+require "$CHANFILE" "Must specify channel file to read."
+require_file "$CHANFILE" "File does not exist: $CHANFILE"
+
+OUTFILE="$2"
+if [ -z "$OUTFILE" ]; then 
+	# Default to stdout: 
+	OUTFILE="-"
+fi
+
+# Load channel settings:
+source "$CHANFILE"
+require "$FREQ" "chanfile did not specify FREQ"
+require "$PROG" "chanfile did not specify PROG"
+
+
+# Set channel and program
+"$HDHR" $DEVICE set /tuner$TUNER/channel auto:$FREQ
+"$HDHR" $DEVICE set /tuner$TUNER/program $PROG
+
+
+# Stream the data: 
+"$HDHR" $DEVICE save /tuner$TUNER "$OUTFILE"
