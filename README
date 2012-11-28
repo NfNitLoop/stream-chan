@@ -1,0 +1,41 @@
+stream-chan is a script that you can use to stream HD channels to your DLNA player of choice.  This README will describe how to set up streaming with Mediatomb. 
+
+1) Install the hdhomerun_config utility.  
+
+There are Debian packages, or you can get the source from here: 
+http://www.silicondust.com/support/hdhomerun/downloads/linux/
+
+2) Use hdhomerun_config to find your device ID.  ex: 
+
+$ hdhomerun discover
+hdhomerun device FFFEFDFC found at 192.168.1.12
+
+3) Create a stream-chan.conf in the same directory as stream-chan.  Ex: 
+
+HDHR=/usr/bin/hdhomerun_config
+DEVICE=FFFEFDFC 
+TUNER=0
+
+4) Scan for TV channels in your area: 
+
+hdhomerun_config FFFEFDFC scan 0 scan.results
+
+5) Use make-chans to create .chan files representing those files.
+
+./make-chans scan.results
+
+6) Move those files into a location you'll share with Mediatomb. 
+
+(Tip: Don't have Mediatomb running when you do this.  It might scan the .chan files before we've configured them correctly in the next step.)
+
+mv *.chan /usr/local/share/mediatomb
+
+7) Configure Mediatomb to "transcode" .chan files to mpeg files. 
+
+See mediatomb.sample.config.xml
+
+8) Start up Mediatomb and watch TV on your PS3.  :)
+
+
+
+

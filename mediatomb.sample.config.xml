@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This file ONLY contains XML document structure to show what I added to a
+default Mediatomb config to get .chan files working.  You'll probably want to copy/paste these snippets into a more robust config. 
+-->
+
+<config version="1" xmlns="http://mediatomb.cc/config/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://mediatomb.cc/config/1 http://mediatomb.cc/config/1.xsd">
+  <!--
+     Read /usr/share/doc/mediatomb-common/README.gz section 6 for more
+     information on creating and using config.xml configration files.
+    -->
+  <server>
+    <protocolInfo extend="yes"/><!-- For PS3 support change to "yes" -->
+  </server>
+  <import hidden-files="no">
+    <mappings>
+      <extension-mimetype ignore-unknown="no">
+        <map from="chan" to="video/channel"/>
+      </extension-mimetype>
+      <mimetype-upnpclass>
+        <map from="video/*" to="object.item.videoItem"/>
+      </mimetype-upnpclass>
+    </mappings>
+  </import>
+  <transcoding enabled="yes">
+    <mimetype-profile-mappings>
+      <transcode mimetype="video/channel" using="stream-chan"/>
+    </mimetype-profile-mappings>
+
+    <profiles>
+      <profile name="stream-chan" enabled="yes" type="external">
+        <mimetype>video/mpeg</mimetype>
+        <accept-url>no</accept-url>
+        <hide-original-resource>yes</hide-original-resource>
+        <agent command="/path/to/stream-chan" arguments="%in %out"/>
+        <buffer size="1048576" chunk-size="131072" fill-size="262144"/>
+      </profile>
+    </profiles>
+  </transcoding>
+</config>
